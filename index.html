@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flkudev</title>
+<meta name="description" content="Reverse engineer with 4+ years of experience. Rocket League bots, SDKs and dev help.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --card: #0d0d0d;
+    --card-2: #141414;
+    --line: #1f1f1f;
+    --text: #ffffff;
+    --muted: #8c8c8c;
+    --inverse-bg: #ffffff;
+    --inverse-text: #000000;
+    --inverse-muted: #5c5c5c;
+
+    --font: "Geist", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --r-lg: 32px;
+    --r-md: 24px;
+    --gutter: clamp(16px, 4vw, 40px);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+
+  .wrap {
+    width: 100%;
+    max-width: 1100px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* ---------- floating nav ---------- */
+  .nav {
+    position: sticky;
+    top: 16px;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    padding-inline: var(--gutter);
+    pointer-events: none;
+  }
+  .nav-inner {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    background: rgba(18, 18, 18, 0.78);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    max-width: 100%;
+  }
+  .nav a {
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 999px;
+    color: var(--muted);
+    transition: color 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+  .nav a:hover { color: var(--text); }
+  .nav a.logo { color: var(--text); font-weight: 600; }
+  .nav a.cta { background: var(--inverse-bg); color: var(--inverse-text); }
+  .nav a.cta:hover { background: #e6e6e6; color: var(--inverse-text); }
+
+  /* ---------- hero ---------- */
+  .hero { padding-block: clamp(72px, 14vw, 168px) clamp(56px, 9vw, 112px); }
+  .pill {
+    display: inline-block;
+    padding: 7px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-weight: 600;
+    font-size: clamp(2.6rem, 8.4vw, 6.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    margin: 0 0 28px;
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+  .hero p.lead {
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    color: var(--muted);
+    max-width: 46ch;
+    margin: 0 0 40px;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 28px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .btn:hover { border-color: #3a3a3a; background: var(--card-2); }
+  .btn.solid { background: var(--inverse-bg); border-color: var(--inverse-bg); color: var(--inverse-text); }
+  .btn.solid:hover { background: #e6e6e6; border-color: #e6e6e6; }
+
+  /* ---------- sections ---------- */
+  section { padding-block: clamp(40px, 7vw, 88px); }
+  h2 {
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .sub { color: var(--muted); margin: 0 0 40px; max-width: 48ch; }
+
+  /* about row */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 28px;
+  }
+  .stat strong {
+    display: block;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+  .stat span { color: var(--muted); font-size: 0.95rem; }
+
+  /* services */
+  .services {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .service {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: clamp(24px, 4vw, 40px);
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .service:hover { background: var(--card-2); border-color: #2c2c2c; }
+  .service .n {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid #2c2c2c;
+    display: grid; place-items: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .service h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    margin: 0 0 8px;
+  }
+  .service p { margin: 0; color: var(--muted); font-size: 1rem; }
+
+  /* work */
+  .work {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-rows: clamp(220px, 28vw, 320px);
+    gap: 16px;
+  }
+  .shot {
+    position: relative;
+    margin: 0;
+    grid-column: span 2;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--line);
+    min-width: 0;
+  }
+  .shot:nth-child(1) { grid-column: span 4; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+  .shot:hover img { transform: scale(1.04); }
+  .shot figcaption {
+    position: absolute;
+    left: 12px; right: 12px; bottom: 12px;
+    padding: 14px 18px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .shot figcaption strong { font-weight: 600; font-size: 1rem; letter-spacing: -0.01em; }
+  .shot figcaption span { color: var(--muted); font-size: 0.88rem; }
+  .shot.empty {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 20px;
+    border-style: dashed;
+    border-color: #2c2c2c;
+  }
+  .shot.empty .ph { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+  .shot.empty .ph b {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: var(--card-2);
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+  .shot.empty code { color: var(--text); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.85em; }
+
+  /* contact (inverted card) */
+  .contact-card {
+    background: var(--inverse-bg);
+    color: var(--inverse-text);
+    border-radius: var(--r-lg);
+    padding: clamp(32px, 7vw, 80px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 64px);
+    align-items: end;
+  }
+  .contact-card h2 { margin: 0 0 14px; }
+  .contact-card p { margin: 0; color: var(--inverse-muted); max-width: 40ch; }
+  .handle-box { min-width: 0; }
+  .handle-box .label { display: block; font-size: 0.85rem; color: var(--inverse-muted); margin-bottom: 6px; }
+  .handle {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin: 0 0 20px;
+    overflow-wrap: anywhere;
+    user-select: all;
+  }
+  .btn.dark { background: var(--inverse-text); border-color: var(--inverse-text); color: var(--inverse-bg); width: 100%; }
+  .btn.dark:hover { background: #222; border-color: #222; }
+  .contact-card :focus-visible { outline-color: var(--inverse-text); }
+  .copied { min-height: 1.4em; margin: 10px 0 0; font-size: 0.88rem; color: var(--inverse-muted); }
+
+  footer { padding-block: 40px 56px; color: var(--muted); font-size: 0.9rem; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 860px) {
+    .stats { grid-template-columns: minmax(0, 1fr); }
+    .contact-card { grid-template-columns: minmax(0, 1fr); align-items: start; }
+    .work { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 210px; }
+    .shot, .shot:nth-child(n) { grid-column: span 1; }
+    .shot:nth-child(1), .shot:nth-child(5) { grid-column: span 2; }
+  }
+  @media (max-width: 600px) {
+    .services { grid-template-columns: minmax(0, 1fr); }
+    .service { min-height: 0; }
+    .work { grid-template-columns: minmax(0, 1fr); }
+    .shot, .shot:nth-child(n) { grid-column: span 1; }
+    .nav a { padding: 9px 12px; }
+    .nav a.hide-sm { display: none; }
+    .actions .btn { flex: 1 1 auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn, .shot img, .service, .nav a { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <nav class="nav-inner" aria-label="Sections">
+    <a class="logo" href="#top">flkudev</a>
+    <a class="hide-sm" href="#services">Services</a>
+    <a class="hide-sm" href="#work">Work</a>
+    <a class="cta" href="#contact">Contact</a>
+  </nav>
+</div>
+
+<main id="top">
+
+  <div class="hero">
+    <div class="wrap">
+      <span class="pill">Available for dev help</span>
+      <h1>Reverse engineering, done properly.</h1>
+<p class="lead">I build anti-cracking protection for Rocket League bots, prevent SDK source code leaks and much more.</p>
+      <div class="actions">
+        <a class="btn solid" href="#contact">Get in touch</a>
+        <a class="btn" href="#work">See my work</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap stats">
+      <div class="stat"><strong>4+</strong><span>Years reverse engineering</span></div>
+      <div class="stat"><strong>Coding</strong><span>I know C++ and C#.</span></div>
+      <div class="stat"><strong>IRL</strong><span>I work as an Software Security.</span></div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <h2>My Achievements</h2>
+      <p class="sub">What i cracked/reverse engineered.</p>
+      <div class="services">
+        <article class="service">
+          <span class="n">1</span>
+          <div>
+            <h3>Rift</h3>
+            <p>I have all models from rift, including Kuso, Syso, Sky and have their loader src.</p>
+          </div>
+        </article>
+        <article class="service">
+          <span class="n">2</span>
+          <div>
+            <h3>Kumori</h3>
+            <p>I have the bot models of Kumori and Kumori V2.</p>
+          </div>
+        </article>
+        <article class="service">
+          <span class="n">3</span>
+          <div>
+            <h3>Wolvot
+            <p>I have all the Wolvot models.</p>
+          </div>
+        </article>
+        <article class="service">
+          <span class="n">4</span>
+          <div>
+            <h3>Overall</h3>
+            <p>I have much more models (Around 50) and cracked resources which i didn't state here.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap">
+      <h2>My work</h2>
+      <p class="sub">Screenshots and demos from my own cracks and reversed sources.</p>
+      <div class="work" id="work-grid"></div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-card">
+        <div>
+          <h2>Let's build something.</h2>
+          <p>Message me on Discord with what you are working on and where you are stuck.</p>
+        </div>
+        <div class="handle-box">
+          <span class="label">Discord</span>
+          <p class="handle" id="handle" style="color:inherit">flkudev</p>
+          <button class="btn dark" id="copy" type="button">Copy username</button>
+          <p class="copied" id="copied" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>flkudev</span>
+    <span>Reverse engineering, bots and SDKs</span>
+  </div>
+</footer>
+
+<script>
+  const IMAGES = [
+    { src: "https://media.discordapp.net/attachments/1556770918712479864/1557060164643852288/image.png?backend=b2&ex=6ac71588&is=6ac5c408&hm=84fd73d9c8394ead95228e4ec7a5ab3774c541368a4841d473fd9a88ef34aeec&=&format=webp&quality=lossless", title: "Rift Models",   caption: "L kubi skid 💀" },
+    { src: "https://cdn.discordapp.com/attachments/1557030389917163540/1557393003725721620/image.png?backend=b2&ex=6ac7a2c3&is=6ac65143&hm=68c6a2948f505b25da5311ed0aa444570342312f2a80cb1cd720740fb950f9c6&", title: "Hyx Crack",   caption: "made in less than 5 minutes. hyx is a pretty nice cheat tho." },
+    { src: "https://cdn.discordapp.com/attachments/1443385552819978250/1556080062518788187/image.png?backend=b2&ex=6ac7793d&is=6ac627bd&hm=2e314ad5e7f78cc6ea261569f49bb9c363bc4dc6a46e7a76fae3cc57e0d020c1&", title: "ifykyk", caption: "2x L kubi skid 🥀" },
+    { src: "https://media.discordapp.net/attachments/1434972020226920600/1556362850300072007/image.png?backend=b2&ex=6ac72f1b&is=6ac5dd9b&hm=dce978ce06d845028a50e15a3d185bf0720693aa3727ca9a5c485631d109f864&=&format=webp&quality=lossless", title: "Rift Crack Source",  caption: "jewbi jewbi where r you 💀🥀" },
+    { src: "https://media.discordapp.net/attachments/1435384278677586000/1557375515566805083/image.png?backend=b2&ex=6ac79279&is=6ac640f9&hm=4bc5c1c36b67ca6fd9b899c1bd94c6b774f2d520c027c8ab172bde9c9a5017ab&=&format=webp&quality=lossless", title: "Kumori Models integrated into a custom SDK",  caption: "sorry kuromi i like you tho." }
+  ];
+
+  const grid = document.getElementById("work-grid");
+
+  function placeholder(fig, i) {
+    fig.className = "shot empty";
+    fig.innerHTML =
+      '<div class="ph"><b>Image ' + (i + 1) + '</b><br>' +
+      'Paste a link in <code>IMAGES[' + i + '].src</code></div>';
+  }
+
+  IMAGES.forEach(function (item, i) {
+    const fig = document.createElement("figure");
+    fig.className = "shot";
+    if (item.src && item.src.trim()) {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.alt = item.title;
+      img.src = item.src.trim();
+      img.addEventListener("error", function () { placeholder(fig, i); });
+      const cap = document.createElement("figcaption");
+      const t = document.createElement("strong");
+      const c = document.createElement("span");
+      t.textContent = item.title;
+      c.textContent = item.caption;
+      cap.append(t, c);
+      fig.append(img, cap);
+    } else {
+      placeholder(fig, i);
+    }
+    grid.appendChild(fig);
+  });
+
+  const copyBtn = document.getElementById("copy");
+  const copied = document.getElementById("copied");
+  const handle = document.getElementById("handle");
+
+  copyBtn.addEventListener("click", function () {
+    const text = handle.textContent.trim();
+    function done(msg) {
+      copied.textContent = msg;
+      setTimeout(function () { copied.textContent = ""; }, 2200);
+    }
+    function fallback() {
+      const r = document.createRange();
+      r.selectNodeContents(handle);
+      const s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+      done("Selected. Press Ctrl+C to copy.");
+    }
+    try {
+      navigator.clipboard.writeText(text).then(
+        function () { done("Copied " + text); },
+        fallback
+      );
+    } catch (e) { fallback(); }
+  });
+</script>
+</body>
+</html>
